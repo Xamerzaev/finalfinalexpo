@@ -926,6 +926,7 @@ class ModelCompatibilityChecker:
     JSON_FORMAT_SUPPORTED_MODELS = [
         "gpt-4-turbo",
         "gpt-4-0125-preview",
+        "ft:gpt-4.1-2025-04-14:expovision:expovision:BQ4JVN7C",
         "gpt-4-1106-preview",
         "gpt-4-vision-preview",
         "gpt-3.5-turbo-0125",
@@ -1453,12 +1454,12 @@ class TwoStageAnalyzer:
                 logger.info(f"Sending final synthesis to gpt-4")
                 
                 # Проверяем, поддерживает ли модель параметр response_format
-                model = "gpt-4"
+                model = "ft:gpt-4.1-2025-04-14:expovision:expovision:BQ4JVN7C"
                 kwargs = {
                     "model": model,
                     "messages": messages,
                     "temperature": 0.7,
-                    "max_tokens": 2000  # Уменьшено с 4000 до 2000
+                    "max_tokens": 4000  # Уменьшено с 4000 до 2000
                 }
                 
                 # Добавляем параметр response_format только если модель его поддерживает
@@ -1554,7 +1555,7 @@ class TwoStageAnalyzer:
 
 Результат должен быть в виде структурированного JSON с полями:
 - title: заголовок анализа
-- summary: краткое резюме анализа
+- summary: максимальное подробно со всей цепочкой и размышлениями резюме анализа
 - period_data: объект с полями start_date и end_date, содержащими даты начала и конца периода анализа в формате "DD.MM"
 - dynamics: объект с информацией о динамике показателей, включающий поля total_rows, total_columns, mean, median, change_percent и key_metrics_change_percent
 - factors: объект с информацией о факторах, влияющих на изменения показателей, включающий поля missing_values, categorical_data и key_factors (массив)
@@ -1562,7 +1563,7 @@ class TwoStageAnalyzer:
 - completed_tasks: массив выполненных задач
 - pending_tasks: массив предстоящих задач
 
-ВАЖНО: Ответ должен быть ТОЛЬКО в формате JSON. Не добавляй никаких пояснений, комментариев или текста до или после JSON. Не используй маркдаун-форматирование для JSON. Верни только чистый JSON-объект.
+ВАЖНО: Ответ должен быть ТОЛЬКО в формате JSON. Не добавляй никаких пояснений, комментариев или текста до или после JSON. Не используй маркдаун-форматирование для JSON. Верни только чистый JSON-объект, который содержит в себе отчет максимально подробный бизнес-аналитика.
 """
         elif analysis_type == "competitors":
             system_prompt = """
@@ -1574,7 +1575,7 @@ class TwoStageAnalyzer:
 
 Результат должен быть в виде структурированного JSON с полями:
 - title: заголовок анализа
-- summary: краткое резюме анализа
+- summary: максимальное подробно со всей цепочкой и размышлениями резюме анализа
 - period_data: объект с полями start_date и end_date, содержащими даты начала и конца периода анализа в формате "DD.MM"
 - dynamics: объект с информацией о динамике показателей, включающий поля total_rows, total_columns, mean, median, change_percent и key_metrics_change_percent
 - factors: объект с информацией о факторах, влияющих на изменения показателей, включающий поля missing_values, categorical_data и key_factors (массив)
@@ -1594,7 +1595,7 @@ class TwoStageAnalyzer:
 
 Результат должен быть в виде структурированного JSON с полями:
 - title: заголовок анализа
-- summary: краткое резюме анализа
+- summary: максимальное подробно со всей цепочкой и размышлениями резюме анализа
 - period_data: объект с полями start_date и end_date, содержащими даты начала и конца периода анализа в формате "DD.MM"
 - dynamics: объект с информацией о динамике показателей, включающий поля total_rows, total_columns, mean, median, change_percent и key_metrics_change_percent
 - factors: объект с информацией о факторах, влияющих на изменения показателей, включающий поля missing_values, categorical_data и key_factors (массив)
@@ -1651,7 +1652,7 @@ class OptimizedOpenAIService:
         self.model_checker = ModelCompatibilityChecker()
         self.empty_response_handler = EmptyResponseHandler()
     
-    async def chat_completion(self, messages: List[Dict[str, str]], temperature: float = 0.7, max_tokens: int = 1000, model: str = "gpt-3.5-turbo") -> Dict[str, Any]:
+    async def chat_completion(self, messages: List[Dict[str, str]], temperature: float = 0.7, max_tokens: int = 2000, model: str = "ft:gpt-4.1-2025-04-14:expovision:expovision:BQ4JVN7C") -> Dict[str, Any]:
         """
         Отправляет запрос к API OpenAI для генерации текста
         
